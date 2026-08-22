@@ -10,7 +10,7 @@ on:
 permissions:
   contents: write
 
-# Prevent multiple workflow runs from competing with each other
+# Prevent multiple pipeline runs from competing with each other
 concurrency:
   group: tourism-pipeline-${{ github.ref }}
   cancel-in-progress: true
@@ -18,16 +18,18 @@ concurrency:
 jobs:
 
   # =========================================================
-  # 1. REGISTER DATASET
+  # 1. DATASET REGISTRATION
   # =========================================================
 
   register-dataset:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
@@ -55,9 +57,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
@@ -89,9 +93,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
@@ -119,14 +125,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Get the latest changes from main
+          # Get the latest version of main before pushing
           git pull --rebase origin main
 
           # Add the newly trained model
           git add tourism_project/deployment/best_model.pkl
 
-          # Commit the model
+          # Commit the trained model
           git commit -m "Add trained model [skip ci]" || echo "No changes to commit"
 
-          # Push the updated model
+          # Push the trained model
           git push origin main
