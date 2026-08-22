@@ -10,7 +10,6 @@ on:
 permissions:
   contents: write
 
-# Prevent multiple pipeline runs from competing with each other
 concurrency:
   group: tourism-pipeline-${{ github.ref }}
   cancel-in-progress: true
@@ -18,7 +17,7 @@ concurrency:
 jobs:
 
   # =========================================================
-  # 1. DATASET REGISTRATION
+  # 1. REGISTER DATASET
   # =========================================================
 
   register-dataset:
@@ -120,19 +119,23 @@ jobs:
         run: |
           python tourism_project/model_building/train.py
 
+      # -------------------------------------------------------
+      # Commit and push the newly trained model
+      # -------------------------------------------------------
+
       - name: Commit Trained Model
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Get the latest version of main before pushing
-          git pull --rebase origin main
-
           # Add the newly trained model
           git add tourism_project/deployment/best_model.pkl
 
-          # Commit the trained model
+          # Commit the model
           git commit -m "Add trained model [skip ci]" || echo "No changes to commit"
+
+          # Update local branch with the latest remote changes
+          git pull --rebase origin main
 
           # Push the trained model
           git push origin main
