@@ -4,7 +4,7 @@ import pandas as pd
 import joblib
 
 
-# Load the trained model
+# Loading the trained model
 MODEL_PATH = "tourism_project/deployment/best_model.pkl"
 model = joblib.load(MODEL_PATH)
 
