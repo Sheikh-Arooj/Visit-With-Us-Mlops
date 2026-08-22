@@ -10,7 +10,16 @@ on:
 permissions:
   contents: write
 
+# Prevent multiple workflow runs from competing with each other
+concurrency:
+  group: tourism-pipeline-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+
+  # =========================================================
+  # 1. REGISTER DATASET
+  # =========================================================
 
   register-dataset:
     runs-on: ubuntu-latest
@@ -36,6 +45,10 @@ jobs:
           name: registered-data
           path: tourism_project/data/tourism.csv
 
+
+  # =========================================================
+  # 2. DATA PREPARATION
+  # =========================================================
 
   data-prep:
     needs: register-dataset
@@ -66,6 +79,10 @@ jobs:
             tourism_project/model_building/y_train.csv
             tourism_project/model_building/y_test.csv
 
+
+  # =========================================================
+  # 3. MODEL TRAINING
+  # =========================================================
 
   model-training:
     needs: data-prep
@@ -101,6 +118,15 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Get the latest changes from main
+          git pull --rebase origin main
+
+          # Add the newly trained model
           git add tourism_project/deployment/best_model.pkl
+
+          # Commit the model
           git commit -m "Add trained model [skip ci]" || echo "No changes to commit"
-          git push
+
+          # Push the updated model
+          git push origin main
