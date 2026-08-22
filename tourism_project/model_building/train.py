@@ -3,7 +3,6 @@ import os
 import pandas as pd
 import joblib
 import mlflow
-import mlflow.sklearn
 
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
@@ -15,7 +14,7 @@ from xgboost import XGBClassifier
 
 
 # ---------------------------------------------------------
-# 1. Load train and test data
+# 1. Loading train and test data
 # ---------------------------------------------------------
 
 DATA_DIR = "tourism_project/model_building"
@@ -41,7 +40,7 @@ print("Testing data shape:", X_test.shape)
 
 
 # ---------------------------------------------------------
-# 2. Identify categorical and numerical columns
+# 2. Identifying categorical and numerical columns
 # ---------------------------------------------------------
 
 categorical_columns = X_train.select_dtypes(
@@ -88,7 +87,7 @@ preprocessor = ColumnTransformer(
 
 
 # ---------------------------------------------------------
-# 4. Define XGBoost model
+# 4. Defining XGBoost model
 # ---------------------------------------------------------
 
 model = XGBClassifier(
@@ -98,7 +97,7 @@ model = XGBClassifier(
 
 
 # ---------------------------------------------------------
-# 5. Create preprocessing + model pipeline
+# 5. Creating preprocessing + model pipeline
 # ---------------------------------------------------------
 
 pipeline = Pipeline(
@@ -110,7 +109,7 @@ pipeline = Pipeline(
 
 
 # ---------------------------------------------------------
-# 6. Define hyperparameter grid
+# 6. Defining hyperparameter grid
 # ---------------------------------------------------------
 
 param_grid = {
@@ -158,7 +157,7 @@ with mlflow.start_run():
 
 
     # -----------------------------------------------------
-    # 9. Evaluate the best model
+    # 9. Evaluating the best model
     # -----------------------------------------------------
 
     y_pred = best_model.predict(X_test)
@@ -191,7 +190,7 @@ with mlflow.start_run():
 
 
     # -----------------------------------------------------
-    # 10. Log parameters and metrics to MLflow
+    # 10. Logging parameters and metrics to MLflow
     # -----------------------------------------------------
 
     mlflow.log_params(best_params)
@@ -201,14 +200,11 @@ with mlflow.start_run():
     mlflow.log_metric("recall", recall)
     mlflow.log_metric("f1_score", f1)
 
-    mlflow.sklearn.log_model(
-        best_model,
-        name="best_xgboost_model"
-    )
+    print("\nParameters and metrics logged to MLflow.")
 
 
 # ---------------------------------------------------------
-# 11. Save the best model
+# 11. Saving the best model
 # ---------------------------------------------------------
 
 DEPLOYMENT_DIR = "tourism_project/deployment"
